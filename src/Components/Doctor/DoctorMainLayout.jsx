@@ -2,7 +2,7 @@ import { useState } from 'react';
 import DoctorSidebar from './DoctorSidebar';
 import AppointmentRequests from '../../Pages/Doctors/AppointmentRequests';
 import DoctorProfile from '../../Pages/Doctors/DoctorProfile';
-import DoctorDashboard from '../../Pages/Doctors/DoctorDashboard';
+import IssuePrescriptions from '../../Pages/Doctors/IssuePrescriptions';
 
 const DoctorMainLayout = ({ children }) => {
   const [activePage, setActivePage] = useState('doctor-dashboard');
@@ -18,6 +18,8 @@ const DoctorMainLayout = ({ children }) => {
 
         {activePage === 'appointment-requests' && <AppointmentRequests />}  
         {activePage === 'profile' && <DoctorProfile />}
+        {activePage === 'issue-prescriptions' && <IssuePrescriptions />}
+        
         </div>
       </div>
     </div>
