@@ -36,7 +36,7 @@ function App() {
       case 'medical-history':
         return <MedicalHistory />;
       default:
-        return <BrowseDoctors />;
+        return <PatientDashboard />;
     }
   };
 
