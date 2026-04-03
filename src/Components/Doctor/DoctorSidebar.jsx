@@ -13,7 +13,7 @@ const DoctorSidebar = ({ activePage, setActivePage }) => {
     { id: 'schedule', label: 'My Schedule', icon: '📅', hasSubmenu: true },
     { id: 'appointment-requests', label: 'Appointment Requests', icon: '📬' },
     { id: 'video-consultations', label: 'Video Consultations', icon: '📹' },
-    { id: 'prescriptions', label: 'Issue Prescriptions', icon: '💊' },
+    { id: 'issue-prescriptions', label: 'Issue Prescriptions', icon: '💊' },
     { id: 'patient-reports', label: 'Patient Reports', icon: '📋' },
     { id: 'my-patients', label: 'My Patients', icon: '👥' },
   ];
