@@ -5,6 +5,8 @@ import MainLayout from './Components/Layout/MainLayout';
 import VideoConsultationPage from './Pages/Video-Consultations/VideoConsultationPage';
 import UploadReports from './Pages/MedicalRecords/UploadReports';
 import Prescriptions from './Pages/MedicalRecords/ViewPrescriptions';
+import BookAppointment from './Pages/Appointments/BookAppointment';
+import MyAppointments from './Pages/Appointments/MyAppointments';
 
 function App() {
   const [activePage, setActivePage] = useState('doctors');
@@ -23,6 +25,10 @@ function App() {
         return <UploadReports />;
       case 'prescriptions':
         return <Prescriptions />;
+      case 'book':
+        return <BookAppointment />;
+      case 'my-appointments':
+        return <MyAppointments />;
       default:
         return <BrowseDoctors />;
     }
