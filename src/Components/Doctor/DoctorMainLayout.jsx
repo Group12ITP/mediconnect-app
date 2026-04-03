@@ -3,6 +3,8 @@ import DoctorSidebar from './DoctorSidebar';
 import AppointmentRequests from '../../Pages/Doctors/AppointmentRequests';
 import DoctorProfile from '../../Pages/Doctors/DoctorProfile';
 import IssuePrescriptions from '../../Pages/Doctors/IssuePrescriptions';
+import SetAvailability from '../../Pages/Doctors/SetAvailability';
+import ViewFullSchedule from '../../Pages/Doctors/ViewFullSchedule';
 
 const DoctorMainLayout = ({ children }) => {
   const [activePage, setActivePage] = useState('doctor-dashboard');
@@ -19,6 +21,8 @@ const DoctorMainLayout = ({ children }) => {
         {activePage === 'appointment-requests' && <AppointmentRequests />}  
         {activePage === 'profile' && <DoctorProfile />}
         {activePage === 'issue-prescriptions' && <IssuePrescriptions />}
+        {activePage === 'set-availability' && <SetAvailability />}
+        {activePage === 'view-full-schedule' && <ViewFullSchedule />}
         
         </div>
       </div>

@@ -59,7 +59,7 @@ const DoctorSidebar = ({ activePage, setActivePage }) => {
                   Set Availability
                 </button>
                 <button
-                  onClick={() => setActivePage('view-schedule')}
+                  onClick={() => setActivePage('view-full-schedule')}
                   className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl"
                 >
                   View Full Schedule
