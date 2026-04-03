@@ -1,5 +1,5 @@
 import { prescriptionsData } from '../../data/prescriptionsData';
-import { Calendar, Stethoscope, ClipboardList, FileText, Pill, AlertCircle } from 'lucide-react';
+import { Calendar, Stethoscope, ClipboardList, Pill, AlertCircle } from 'lucide-react';
 
 const MedicalHistory = () => {
   const getSpecialtyIcon = (specialty) => {
@@ -45,7 +45,7 @@ const MedicalHistory = () => {
         <div className="absolute left-[43px] top-8 bottom-8 w-0.5 bg-gradient-to-b from-emerald-300 via-teal-200 to-emerald-100"></div>
 
         <div className="space-y-8">
-          {prescriptionsData.map((item, index) => (
+          {prescriptionsData.map((item) => (
             <div key={item.id} className="relative group">
               {/* Timeline Dot */}
               <div className="absolute left-[35px] -translate-x-1/2 w-4 h-4 rounded-full bg-white border-4 border-emerald-500 z-10 group-hover:scale-125 transition-transform duration-300"></div>
