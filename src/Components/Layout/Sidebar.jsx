@@ -21,7 +21,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
     { id: 'records', label: 'Medical Records', icon: '📋', hasSubmenu: true,
       submenu: [
         { label: 'Upload Reports', onClick: () => setActivePage('upload-reports') },
-        { label: 'Medical History', onClick: () => setActivePage('history') },
+        { label: 'Medical History', onClick: () => setActivePage('medical-history') },
         { label: 'Prescriptions', onClick: () => setActivePage('prescriptions') },
       ]
     },
