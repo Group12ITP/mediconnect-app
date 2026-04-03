@@ -20,7 +20,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
     { id: 'telemedicine', label: 'Video Consultations', icon: '📹', onClick: () => setActivePage('telemedicine') },
     { id: 'records', label: 'Medical Records', icon: '📋', hasSubmenu: true,
       submenu: [
-        { label: 'Upload Reports', onClick: () => setActivePage('upload') },
+        { label: 'Upload Reports', onClick: () => setActivePage('upload-reports') },
         { label: 'Medical History', onClick: () => setActivePage('history') },
         { label: 'Prescriptions', onClick: () => setActivePage('prescriptions') },
       ]
