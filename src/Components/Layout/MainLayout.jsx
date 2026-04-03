@@ -1,21 +1,11 @@
-import { useState } from 'react';
 import Sidebar from './Sidebar';
-import Header from './Header';
 
-const MainLayout = ({ children }) => {
-  const [activePage, setActivePage] = useState('chatbot');
-
+const MainLayout = ({ children, activePage, setActivePage }) => {
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
-      {/* Left Sidebar - Shared Navigation */}
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-
-
-        {/* Page Content - Your Chatbot goes here */}
-        <div className="flex-1 overflow-auto p-4 pt-0">
+      <div className="flex-1 flex flex-col overflow-auto">
+        <div className="flex-1 p-4 pt-0">
           {children}
         </div>
       </div>
