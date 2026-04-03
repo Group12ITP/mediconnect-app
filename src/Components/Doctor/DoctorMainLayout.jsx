@@ -5,6 +5,7 @@ import DoctorProfile from '../../Pages/Doctors/DoctorProfile';
 import IssuePrescriptions from '../../Pages/Doctors/IssuePrescriptions';
 import SetAvailability from '../../Pages/Doctors/SetAvailability';
 import ViewFullSchedule from '../../Pages/Doctors/ViewFullSchedule';
+import VideoConsultations from '../../Pages/Doctors/VideoConsultations';
 
 const DoctorMainLayout = ({ children }) => {
   const [activePage, setActivePage] = useState('doctor-dashboard');
@@ -23,6 +24,7 @@ const DoctorMainLayout = ({ children }) => {
         {activePage === 'issue-prescriptions' && <IssuePrescriptions />}
         {activePage === 'set-availability' && <SetAvailability />}
         {activePage === 'view-full-schedule' && <ViewFullSchedule />}
+        {activePage === 'video-consultations' && <VideoConsultations />}
         
         </div>
       </div>
