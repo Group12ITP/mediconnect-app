@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Chatbot from './Pages/Chatbot';
 import BrowseDoctors from './Pages/Doctors/BrowseDoctors';
 import MainLayout from './Components/Layout/MainLayout';
+import VideoConsultationPage from './Pages/Video-Consultations/VideoConsultationPage';
 
 function App() {
   const [activePage, setActivePage] = useState('doctors');
@@ -14,6 +15,8 @@ function App() {
         return <BrowseDoctors />;
       case 'chatbot':
         return <Chatbot />;
+      case 'telemedicine':
+        return <VideoConsultationPage />;
       default:
         return <BrowseDoctors />;
     }
