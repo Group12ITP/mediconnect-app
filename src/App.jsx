@@ -11,7 +11,7 @@ import MedicalHistory from './Pages/MedicalRecords/MedicalHistory';
 import PatientDashboard from './Pages/Dashboard/PatientDashboard';
 
 function App() {
-  const [activePage, setActivePage] = useState('doctors');
+  const [activePage, setActivePage] = useState('dashboard');
 
   const renderPage = () => {
     console.log('Rendering page:', activePage); // Debug log
