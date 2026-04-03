@@ -4,6 +4,7 @@ import BrowseDoctors from './Pages/Doctors/BrowseDoctors';
 import MainLayout from './Components/Layout/MainLayout';
 import VideoConsultationPage from './Pages/Video-Consultations/VideoConsultationPage';
 import UploadReports from './Pages/MedicalRecords/UploadReports';
+import Prescriptions from './Pages/MedicalRecords/ViewPrescriptions';
 
 function App() {
   const [activePage, setActivePage] = useState('doctors');
@@ -20,6 +21,8 @@ function App() {
         return <VideoConsultationPage />;
       case 'upload-reports':
         return <UploadReports />;
+      case 'prescriptions':
+        return <Prescriptions />;
       default:
         return <BrowseDoctors />;
     }
