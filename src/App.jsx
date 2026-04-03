@@ -7,6 +7,8 @@ import UploadReports from './Pages/MedicalRecords/UploadReports';
 import Prescriptions from './Pages/MedicalRecords/ViewPrescriptions';
 import BookAppointment from './Pages/Appointments/BookAppointment';
 import MyAppointments from './Pages/Appointments/MyAppointments';
+import MedicalHistory from './Pages/MedicalRecords/MedicalHistory';
+import PatientDashboard from './Pages/Dashboard/PatientDashboard';
 
 function App() {
   const [activePage, setActivePage] = useState('doctors');
@@ -15,6 +17,8 @@ function App() {
     console.log('Rendering page:', activePage); // Debug log
     
     switch(activePage) {
+      case 'dashboard':
+        return <PatientDashboard />;
       case 'doctors':
         return <BrowseDoctors />;
       case 'chatbot':
@@ -29,6 +33,8 @@ function App() {
         return <BookAppointment />;
       case 'my-appointments':
         return <MyAppointments />;
+      case 'medical-history':
+        return <MedicalHistory />;
       default:
         return <BrowseDoctors />;
     }
