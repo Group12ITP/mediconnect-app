@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useLanguage } from '../../i18n/LanguageContext';
+import LanguageSwitcher from '../../i18n/LanguageSwitcher';
 
-const Sidebar = ({ activePage, setActivePage }) => {
+const Sidebar = ({ activePage, setActivePage, onLogout }) => {
+  const { t } = useLanguage();
   const [openSections, setOpenSections] = useState({ appointments: true, records: true });
 
   const toggleSection = (section) => {
@@ -8,24 +11,32 @@ const Sidebar = ({ activePage, setActivePage }) => {
   };
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', onClick: () => setActivePage('dashboard') },
-    { id: 'doctors', label: 'Browse Doctors', icon: '👨‍⚕️', onClick: () => setActivePage('doctors') },
-    { id: 'appointments', label: 'Appointments', icon: '📅', hasSubmenu: true,
+    { id: 'dashboard', label: t('nav.dashboard'), icon: '📊', onClick: () => setActivePage('dashboard') },
+    { id: 'browse-doctors', label: t('nav.browseDoctors'), icon: '👨‍⚕️', onClick: () => setActivePage('browse-doctors') },
+    { id: 'chatbot', label: t('nav.aiSymptomChecker'), icon: '🧬', onClick: () => setActivePage('chatbot') },
+    { id: 'appointments', label: t('nav.appointments'), icon: '📅', hasSubmenu: true,
       submenu: [
-        { label: 'Book Appointment', onClick: () => setActivePage('book') },
-        { label: 'My Appointments', onClick: () => setActivePage('my-appointments') },
+        { label: t('nav.bookAppointment'), onClick: () => setActivePage('book') },
+        { label: t('nav.myAppointments'), onClick: () => setActivePage('my-appointments') },
+        { label: t('nav.videoConsultations'), onClick: () => setActivePage('video-consultations') },
       ]
     },
-    { id: 'chatbot', label: 'AI Symptom Checker', icon: '🧬', onClick: () => setActivePage('chatbot') },
-    { id: 'telemedicine', label: 'Video Consultations', icon: '📹', onClick: () => setActivePage('telemedicine') },
-    { id: 'records', label: 'Medical Records', icon: '📋', hasSubmenu: true,
+    { id: 'records', label: t('nav.medicalRecords'), icon: '📋', hasSubmenu: true,
       submenu: [
-        { label: 'Upload Reports', onClick: () => setActivePage('upload-reports') },
-        { label: 'Medical History', onClick: () => setActivePage('medical-history') },
-        { label: 'Prescriptions', onClick: () => setActivePage('prescriptions') },
+        { label: t('nav.uploadReports'), onClick: () => setActivePage('upload-reports') },
+        { label: t('nav.medicalHistory'), onClick: () => setActivePage('medical-history') },
+        { label: t('nav.prescriptions'), onClick: () => setActivePage('prescriptions') },
+        { label: t('nav.pharmacyFinder'), onClick: () => setActivePage('pharmacy-finder') },
+        { label: t('nav.healthMonitor'), onClick: () => setActivePage('health-reports') },
       ]
     },
   ];
+
+  const handleLogout = () => {
+    localStorage.removeItem("patientToken");
+    localStorage.removeItem("patientInfo");
+    if (onLogout) onLogout();
+  };
 
   return (
     <div className="w-72 bg-white border-r border-gray-200 h-screen flex flex-col shadow-sm">
@@ -34,7 +45,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
         <div className="w-9 h-9 bg-emerald-600 rounded-2xl flex items-center justify-center text-white text-3xl">🧬</div>
         <div>
           <span className="text-2xl font-bold tracking-tight text-gray-900">MediConnect</span>
-          <span className="block text-xs font-medium text-emerald-600 -mt-1">SMART HEALTHCARE</span>
+          <span className="block text-xs font-medium text-emerald-600 -mt-1">{t('nav.patientPortal')}</span>
         </div>
       </div>
 
@@ -57,33 +68,36 @@ const Sidebar = ({ activePage, setActivePage }) => {
             </button>
 
             {item.hasSubmenu && openSections[item.id] && (
-              <div className="ml-9 mt-1 space-y-1">
-                {item.submenu.map((sub, i) => (
-                  <button
-                    key={i}
-                    onClick={sub.onClick}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl flex items-center gap-x-2"
-                  >
-                    <span className="text-emerald-500">•</span> {sub.label}
-                  </button>
-                ))}
-              </div>
+               <div className="ml-9 mt-1 space-y-1">
+                 {item.submenu.map((sub, i) => (
+                   <button
+                     key={i}
+                     onClick={sub.onClick}
+                     className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-emerald-600 rounded-xl flex items-center gap-x-2 transition-all"
+                   >
+                     <span className="text-emerald-500">•</span> {sub.label}
+                   </button>
+                 ))}
+               </div>
             )}
           </div>
         ))}
       </div>
 
-      {/* Help Box */}
-      <div className="mx-4 mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-3xl">
-        <div className="flex items-start gap-x-3">
-          <div className="text-3xl">🛟</div>
-          <div className="flex-1">
-            <p className="font-semibold text-emerald-900 text-sm">Need help?</p>
-            <p className="text-xs text-emerald-700 mt-0.5">Contact support instantly</p>
-            <button className="mt-3 text-xs font-medium bg-white border border-emerald-200 hover:bg-emerald-100 px-4 py-2 rounded-2xl w-full">
-              Go to Help Center →
-            </button>
-          </div>
+      {/* Language Switcher + Logout */}
+      <div className="mx-4 mb-6 space-y-3">
+        {/* Language */}
+        <div className="p-3 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-between">
+          <span className="text-xs font-medium text-gray-500">{t('language.select')}</span>
+          <LanguageSwitcher variant="default" />
+        </div>
+
+        {/* Logout */}
+        <div className="p-4 bg-red-50 border border-red-100 rounded-3xl">
+          <button onClick={handleLogout} className="text-sm font-bold bg-white text-red-600 border border-red-200 hover:bg-red-600 hover:text-white px-4 py-2.5 rounded-2xl w-full transition-all flex items-center justify-center gap-2 shadow-sm">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            {t('nav.signOut')}
+          </button>
         </div>
       </div>
     </div>
