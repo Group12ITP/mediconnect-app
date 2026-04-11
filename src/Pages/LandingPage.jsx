@@ -73,24 +73,24 @@ const testimonials = [
     role: 'Cardiologist',
     content: 'The platform has revolutionized how I manage my patients. The interface is intuitive and the features are comprehensive.',
     rating: 5,
-    image: 'https://randomuser.me/api/portraits/women/68.jpg',
-    location: 'New York, USA'
+    image: 'https://www.lankahospitals.com/lh-international/wp-content/uploads/sites/6/2024/08/Untitled-2xzcvxvascsc-104.jpg',
+    location: 'Galle road, Colombo'
   },
   {
-    name: 'Michael Chen',
+    name: 'Saman Kumara',
     role: 'Patient',
     content: 'Managing my appointments and health records has never been easier. Highly recommended for anyone serious about their health.',
     rating: 5,
-    image: 'https://randomuser.me/api/portraits/men/32.jpg',
-    location: 'California, USA'
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9692Sv2VSQk83J-yav2wG_FY1Ne7uyHaR9BDAXHyjmw&s',
+    location: 'Colombo road, Kegalle'
   },
   {
     name: 'Dr. Emily Rodriguez',
     role: 'Pediatrician',
     content: 'Excellent platform for both doctors and patients. The telemedicine feature is a game-changer for remote consultations.',
     rating: 5,
-    image: 'https://randomuser.me/api/portraits/women/45.jpg',
-    location: 'Texas, USA'
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJDX2XwafwFPLtuuAbYMQJbJHzu9tM0nqN6w&s',
+    location: 'Aniwaththa, Kandy'
   },
 ];
 
@@ -164,7 +164,7 @@ const LandingPage = () => {
                 <Heart className="w-5 h-5 text-white fill-white/20" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                HealthAI
+                MediConnect
               </span>
             </motion.div>
             
@@ -292,7 +292,7 @@ const LandingPage = () => {
                 className="mt-7 text-lg sm:text-xl text-gray-500 max-w-xl leading-relaxed"
               >
                 Experience the future of healthcare management. AI-powered insights, seamless appointments, 
-                and comprehensive health tracking — all in one intelligent platform.
+                and comprehensive health tracking all in one intelligent platform.
               </motion.p>
 
               <motion.div variants={fadeUp} custom={3} className="mt-10 flex flex-wrap gap-4">
@@ -369,8 +369,8 @@ const LandingPage = () => {
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
                       <div>
-                        <p className="text-sm text-gray-500">Welcome back,</p>
-                        <p className="text-xl font-bold text-gray-900">John Anderson</p>
+                        <p className="text-sm text-gray-500">Hello !</p>
+                        <p className="text-xl font-bold text-gray-900">Welcome Back.</p>
                       </div>
                       <motion.div 
                         className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold"
@@ -523,8 +523,8 @@ const LandingPage = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-3 relative z-10">{f.title}</h3>
                 <p className="text-gray-500 leading-relaxed relative z-10">{f.desc}</p>
                 <div className="mt-4 flex items-center gap-1 text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-sm font-medium">Learn more</span>
-                  <ChevronRight className="w-4 h-4" />
+                  {/* <span className="text-sm font-medium">Learn more</span>
+                  <ChevronRight className="w-4 h-4" /> */}
                 </div>
               </motion.div>
             ))}
@@ -681,7 +681,7 @@ const LandingPage = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center">
                   <Heart className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold">HealthAI</span>
+                <span className="text-xl font-bold">MediConnect</span>
               </div>
               <p className="text-gray-400 text-sm">Revolutionizing healthcare management with AI-powered solutions.</p>
               <div className="flex gap-3 mt-4">
@@ -720,14 +720,14 @@ const LandingPage = () => {
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> support@healthai.com</li>
+                <li className="flex items-center gap-2"><Mail className="w-4 h-4" /> support@mediconnect.com</li>
                 <li className="flex items-center gap-2"><Phone className="w-4 h-4" /> +1 (555) 123-4567</li>
                 <li className="flex items-center gap-2"><MapPin className="w-4 h-4" /> 123 Health St, Medical City</li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2024 HealthAI. All rights reserved. | Made with <Heart className="w-4 h-4 inline text-red-500" /> for better healthcare</p>
+            <p>&copy; 2026 MediConnect. All rights reserved. | Made with <Heart className="w-4 h-4 inline text-red-500" /> for better healthcare</p>
           </div>
         </div>
       </footer>
