@@ -4,7 +4,7 @@ import { LogOut } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import LanguageSwitcher from '../../i18n/LanguageSwitcher';
 
-const DoctorSidebar = ({ activePage, setActivePage, onLogout }) => {
+const DoctorSidebar = ({ activePage, setActivePage, onLogout, isOpen = false, onClose }) => {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [openSections, setOpenSections] = useState({ schedule: true });
@@ -56,7 +56,14 @@ const DoctorSidebar = ({ activePage, setActivePage, onLogout }) => {
   ];
 
   return (
-    <div className="w-72 bg-white border-r border-gray-200 h-screen flex flex-col shadow-sm">
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+      <div className={`fixed md:static top-0 left-0 z-50 h-screen w-72 bg-white border-r border-gray-200 flex flex-col shadow-sm transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
       <div className="px-6 py-5 border-b flex items-center gap-x-3">
         <div className="w-9 h-9 bg-teal-600 rounded-2xl flex items-center justify-center text-white text-3xl">🩺</div>
         <div>
@@ -72,6 +79,7 @@ const DoctorSidebar = ({ activePage, setActivePage, onLogout }) => {
               onClick={() => {
                 setActivePage(item.id);
                 if (item.hasSubmenu) toggleSection(item.id);
+                if (onClose) onClose();
               }}
               className={`w-full flex items-center gap-x-3 px-4 py-3 rounded-2xl text-left text-sm font-medium transition-all ${
                 activePage === item.id ? 'bg-teal-600 text-white' : 'hover:bg-gray-100 text-gray-700'
@@ -86,8 +94,8 @@ const DoctorSidebar = ({ activePage, setActivePage, onLogout }) => {
 
             {item.hasSubmenu && openSections[item.id] && (
               <div className="ml-9 mt-1 space-y-1">
-                <button onClick={() => setActivePage('set-availability')} className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl">{t('nav.setAvailability')}</button>
-                <button onClick={() => setActivePage('view-full-schedule')} className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl">{t('nav.viewFullSchedule')}</button>
+                <button onClick={() => { setActivePage('set-availability'); if (onClose) onClose(); }} className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl">{t('nav.setAvailability')}</button>
+                <button onClick={() => { setActivePage('view-full-schedule'); if (onClose) onClose(); }} className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl">{t('nav.viewFullSchedule')}</button>
               </div>
             )}
           </div>
@@ -111,7 +119,7 @@ const DoctorSidebar = ({ activePage, setActivePage, onLogout }) => {
             </div>
           </div>
           <button
-            onClick={handleLogout}
+            onClick={() => { handleLogout(); if (onClose) onClose(); }}
             className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl text-sm font-medium transition-all"
           >
             <LogOut className="w-4 h-4" />
@@ -119,7 +127,8 @@ const DoctorSidebar = ({ activePage, setActivePage, onLogout }) => {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

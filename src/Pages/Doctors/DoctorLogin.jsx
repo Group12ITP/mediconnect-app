@@ -2,6 +2,7 @@
   import { useNavigate } from "react-router-dom";
   import { useLanguage } from '../../i18n/LanguageContext';
   import LanguageSwitcher from '../../i18n/LanguageSwitcher';
+  import { EMAIL_REGEX } from "../../utils/formValidation";
 
   const DoctorLogin = ({ onLoginSuccess }) => {
     const navigate = useNavigate();
@@ -24,7 +25,7 @@
       const newErrors = {};
       if (!email) {
         newErrors.email = "Email is required";
-      } else if (!/\S+@\S+\.\S+/.test(email)) {
+      } else if (!EMAIL_REGEX.test(email.trim())) {
         newErrors.email = "Please enter a valid email address";
       }
       if (!password) {
@@ -105,7 +106,7 @@
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-500 via-cyan-600 to-blue-700 flex items-center justify-center p-6 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-teal-500 via-cyan-600 to-blue-700 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
         {/* Language Switcher */}
         <div className="absolute top-6 right-6 z-20"><LanguageSwitcher variant="default" /></div>
         {/* Animated Background Elements */}
@@ -117,7 +118,7 @@
 
         <div className="w-full max-w-[1200px] bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 relative z-10 animate-fadeInUp">
           {/* LEFT SIDE - Illustration + Greeting */}
-          <div className="bg-gradient-to-br from-teal-600 to-cyan-700 p-12 flex flex-col justify-center relative overflow-hidden">
+          <div className="hidden lg:flex bg-gradient-to-br from-teal-600 to-cyan-700 p-12 flex-col justify-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
 
@@ -158,7 +159,7 @@
           </div>
 
           {/* RIGHT SIDE - Login Form */}
-          <div className="p-12 lg:p-16 flex flex-col justify-center bg-white">
+          <div className="p-6 sm:p-8 lg:p-16 flex flex-col justify-center bg-white">
             <div className="max-w-md mx-auto w-full">
               <div className="flex items-center gap-3 mb-10 animate-slideInRight">
                 <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg transform rotate-3">

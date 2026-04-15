@@ -11,17 +11,27 @@ import PatientReports from '../../Pages/Doctors/PatientReports';
 
 const DoctorMainLayout = ({ children, onLogout }) => {
   const [activePage, setActivePage] = useState('doctor-dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
+      <button
+        type="button"
+        className="md:hidden fixed top-4 left-4 z-40 bg-teal-600 text-white px-3 py-2 rounded-xl shadow-lg"
+        onClick={() => setIsSidebarOpen(true)}
+      >
+        Menu
+      </button>
       <DoctorSidebar 
         activePage={activePage} 
         setActivePage={setActivePage} 
         onLogout={onLogout}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       <div className="flex-1 flex flex-col">    
-        <div className="flex-1 overflow-auto p-4 pt-2">
+        <div className="flex-1 overflow-auto p-4 sm:p-5 pt-16 md:pt-2">
           {activePage === 'doctor-dashboard' && children} 
           {activePage === 'appointment-requests' && <AppointmentRequests />}  
           {activePage === 'profile' && <DoctorProfile />}

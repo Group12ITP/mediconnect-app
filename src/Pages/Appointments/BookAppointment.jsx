@@ -247,7 +247,16 @@ const handlePayment = async () => {
 
   // ── Step 3: Schedule ───────────────────────────────────────────
   if (step === 3 && selectedDoctor) {
-    const dates = Object.keys(availability).sort();
+    // Filter dates to show only today and future dates
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+    
+    const allDates = Object.keys(availability).sort();
+    const dates = allDates.filter(date => {
+      const dateObj = new Date(date + 'T00:00:00');
+      return dateObj >= today;
+    });
+    
     const selectedDateData = selectedDate ? availability[selectedDate] : null;
     const freeSlots = selectedDateData ? selectedDateData.slots.filter(t => !selectedDateData.booked.includes(t)) : [];
 

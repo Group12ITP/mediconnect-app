@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-const PharmacistSidebar = ({ activePage, setActivePage, onLogout }) => {
+const PharmacistSidebar = ({ activePage, setActivePage, onLogout, isOpen = false, onClose }) => {
   const navigate = useNavigate();
   const pharmacist = JSON.parse(localStorage.getItem("pharmacistInfo") || "{}");
 
@@ -32,7 +32,14 @@ const PharmacistSidebar = ({ activePage, setActivePage, onLogout }) => {
   ];
 
   return (
-    <div className="w-72 bg-white border-r border-gray-200 h-screen flex flex-col shadow-sm">
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+      <div className={`fixed md:static top-0 left-0 z-50 h-screen w-72 bg-white border-r border-gray-200 flex flex-col shadow-sm transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
       <div className="px-6 py-5 border-b flex items-center gap-x-3">
         <div className="w-9 h-9 bg-cyan-600 rounded-2xl flex items-center justify-center text-white text-2xl">💊</div>
         <div>
@@ -45,7 +52,10 @@ const PharmacistSidebar = ({ activePage, setActivePage, onLogout }) => {
         {items.map((item) => (
           <button
             key={item.id}
-            onClick={() => setActivePage(item.id)}
+            onClick={() => {
+              setActivePage(item.id);
+              if (onClose) onClose();
+            }}
             className={`w-full flex items-center gap-x-3 px-4 py-3 rounded-2xl text-left text-sm font-medium transition-all mb-1 ${
               activePage === item.id ? "bg-cyan-600 text-white" : "hover:bg-gray-100 text-gray-700"
             }`}
@@ -62,13 +72,17 @@ const PharmacistSidebar = ({ activePage, setActivePage, onLogout }) => {
         </p>
         <p className="text-xs text-cyan-600 mt-1">{pharmacist.licenseNumber || "Inventory access"}</p>
         <button
-          onClick={handleLogout}
+          onClick={() => {
+            handleLogout();
+            if (onClose) onClose();
+          }}
           className="w-full mt-3 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-2xl text-sm font-medium transition-all"
         >
           Logout
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
