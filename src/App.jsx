@@ -16,12 +16,34 @@ import PaymentSuccess from "./Pages/Payment/PaymentSuccess";
 import PharmacistLogin from "./Pages/Pharmacists/PharmacistLogin";
 import PharmacistMainLayout from "./Components/Pharmacist/PharmacistMainLayout";
 import PharmacistRegister from "./Pages/Pharmacists/PharmacistRegister";
+import AdminLogin from "./Pages/Admin/AdminLogin";
+import AdminDashboard from "./Pages/Admin/AdminDashboard";
 
 // Doctor Views Imports
 import BrowseDoctors from "./Pages/Doctors/BrowseDoctors";
 import DoctorProfile from "./Pages/Doctors/ViewProfile";
 
 import LandingPage from "./Pages/LandingPage";
+
+const parseJwtPayload = (token) => {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const decoded = atob(base64);
+    return JSON.parse(decoded);
+  } catch (error) {
+    return null;
+  }
+};
+
+const isTokenValidForRole = (token, expectedRole) => {
+  const payload = parseJwtPayload(token);
+  if (!payload) return false;
+  if (payload.role !== expectedRole) return false;
+  if (!payload.exp) return false;
+  return payload.exp * 1000 > Date.now();
+};
 
 // Doctor Protected Route wrapper
 const DoctorProtectedRoute = ({ isAuthenticated, children }) => {
@@ -40,25 +62,36 @@ const PharmacistProtectedRoute = ({ isAuthenticated, children }) => {
   return children;
 };
 
+const AdminProtectedRoute = ({ isAuthenticated, children }) => {
+  if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
+  return children;
+};
+
+const GuestOnlyRoute = ({ isAuthenticated, redirectTo, children }) => {
+  if (isAuthenticated) return <Navigate to={redirectTo} replace />;
+  return children;
+};
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDoctorAuth, setIsDoctorAuth] = useState(false);
   const [isPatientAuth, setIsPatientAuth] = useState(false);
   const [isPharmacistAuth, setIsPharmacistAuth] = useState(false);
+  const [isAdminAuth, setIsAdminAuth] = useState(false);
 
   useEffect(() => {
-    // Read auth state for both roles
+    // Read auth state with token role + expiry validation
     const dToken = localStorage.getItem("doctorToken");
-    const dInfo = localStorage.getItem("doctorInfo");
-    setIsDoctorAuth(!!(dToken && dInfo));
-    
+    setIsDoctorAuth(!!dToken && isTokenValidForRole(dToken, "doctor"));
+
     const pToken = localStorage.getItem("patientToken");
-    const pInfo = localStorage.getItem("patientInfo");
-    setIsPatientAuth(!!(pToken && pInfo));
+    setIsPatientAuth(!!pToken && isTokenValidForRole(pToken, "patient"));
 
     const phToken = localStorage.getItem("pharmacistToken");
-    const phInfo = localStorage.getItem("pharmacistInfo");
-    setIsPharmacistAuth(!!(phToken && phInfo));
+    setIsPharmacistAuth(!!phToken && isTokenValidForRole(phToken, "pharmacist"));
+
+    const aToken = localStorage.getItem("adminToken");
+    setIsAdminAuth(!!aToken && isTokenValidForRole(aToken, "admin"));
 
     const timer = setTimeout(() => setIsLoading(false), 600);
     return () => clearTimeout(timer);
@@ -71,6 +104,8 @@ function App() {
   const handlePatientLogin = () => setIsPatientAuth(true);
   const handlePharmacistLogout = () => setIsPharmacistAuth(false);
   const handlePharmacistLogin = () => setIsPharmacistAuth(true);
+  const handleAdminLogout = () => setIsAdminAuth(false);
+  const handleAdminLogin = () => setIsAdminAuth(true);
 
   if (isLoading) {
     return (
@@ -95,8 +130,22 @@ function App() {
         <Route path="/doctor-profile/:id" element={<DoctorProfile />} />
 
         {/* DOCTOR AUTH ROUTES */}
-        <Route path="/doctor/login" element={<DoctorLogin onLoginSuccess={handleDoctorLogin} />} />
-        <Route path="/doctor/register" element={<DoctorRegister onLoginSuccess={handleDoctorLogin} />} />
+        <Route
+          path="/doctor/login"
+          element={
+            <GuestOnlyRoute isAuthenticated={isDoctorAuth} redirectTo="/doctor/dashboard">
+              <DoctorLogin onLoginSuccess={handleDoctorLogin} />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/doctor/register"
+          element={
+            <GuestOnlyRoute isAuthenticated={isDoctorAuth} redirectTo="/doctor/dashboard">
+              <DoctorRegister onLoginSuccess={handleDoctorLogin} />
+            </GuestOnlyRoute>
+          }
+        />
         
         {/* DOCTOR PROTECTED ROUTES */}
         <Route
@@ -121,16 +170,60 @@ function App() {
         />
 
         {/* PATIENT AUTH ROUTES */}
-        <Route path="/patient/login" element={<PatientLogin onLoginSuccess={handlePatientLogin} />} />
-        <Route path="/patient/register" element={<PatientRegister onLoginSuccess={handlePatientLogin} />} />
-        <Route path="/pharmacist/login" element={<PharmacistLogin onLoginSuccess={handlePharmacistLogin} />} />
-        <Route path="/pharmacist/register" element={<PharmacistRegister />} />
+        <Route
+          path="/patient/login"
+          element={
+            <GuestOnlyRoute isAuthenticated={isPatientAuth} redirectTo="/patient/dashboard">
+              <PatientLogin onLoginSuccess={handlePatientLogin} />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/patient/register"
+          element={
+            <GuestOnlyRoute isAuthenticated={isPatientAuth} redirectTo="/patient/dashboard">
+              <PatientRegister onLoginSuccess={handlePatientLogin} />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/pharmacist/login"
+          element={
+            <GuestOnlyRoute isAuthenticated={isPharmacistAuth} redirectTo="/pharmacist/dashboard">
+              <PharmacistLogin onLoginSuccess={handlePharmacistLogin} />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/pharmacist/register"
+          element={
+            <GuestOnlyRoute isAuthenticated={isPharmacistAuth} redirectTo="/pharmacist/dashboard">
+              <PharmacistRegister />
+            </GuestOnlyRoute>
+          }
+        />
+        <Route
+          path="/admin/login"
+          element={
+            <GuestOnlyRoute isAuthenticated={isAdminAuth} redirectTo="/admin/dashboard">
+              <AdminLogin onLoginSuccess={handleAdminLogin} />
+            </GuestOnlyRoute>
+          }
+        />
         <Route
           path="/pharmacist/dashboard"
           element={
             <PharmacistProtectedRoute isAuthenticated={isPharmacistAuth}>
               <PharmacistMainLayout onLogout={handlePharmacistLogout} />
             </PharmacistProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminProtectedRoute isAuthenticated={isAdminAuth}>
+              <AdminDashboard onLogout={handleAdminLogout} />
+            </AdminProtectedRoute>
           }
         />
         <Route
@@ -205,6 +298,7 @@ function App() {
               if (isDoctorAuth) return <Navigate to="/doctor/dashboard" replace />;
               if (isPatientAuth) return <Navigate to="/patient/dashboard" replace />;
               if (isPharmacistAuth) return <Navigate to="/pharmacist/dashboard" replace />;
+              if (isAdminAuth) return <Navigate to="/admin/dashboard" replace />;
               // Otherwise show landing page
               return <LandingPage />;
             })()
