@@ -83,6 +83,8 @@ const translations = {
       doctorDesc: 'Confirm appointments, join calls, issue prescriptions and manage patients.',
       pharmacist: 'Pharmacist',
       pharmacistDesc: 'Manage pharmacy profile, update inventory, and support medicine discovery for patients.',
+      admin: 'Admin',
+      adminDesc: 'Manage user accounts, verify doctor registrations, oversee platform operations, and monitor financial transactions.',
     },
     auth: {
       welcomeBack: 'Welcome Back',
@@ -419,6 +421,8 @@ const translations = {
       doctorDesc: 'හමුවීම් තහවුරු කරන්න, ඇමතුම්වලට සම්බන්ධ වන්න, බෙහෙත් වට්ටෝරු නිකුත් කරන්න.',
       pharmacist: 'ෆාමසිකරු',
       pharmacistDesc: 'ෆාමසි පැතිකඩ කළමනාකරණය කරන්න, ගබඩාව යාවත්කාලීන කරන්න.',
+      admin: 'පරිපාලක',
+      adminDesc: 'පරිශීලක ගිණුම් කළමනාකරණය කරන්න, වෛද්‍ය ලියාපදිංචි සත්‍යාපනය කරන්න, පද්ධති මෙහෙයුම් හා මූල්‍ය ගනුදෙනු අධීක්ෂණය කරන්න.',
     },
     auth: {
       welcomeBack: 'නැවත සාදරයෙන් පිළිගනිමු',

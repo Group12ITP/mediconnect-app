@@ -366,7 +366,7 @@
       Authenticating...
     </div>
   ) : (
-    t('auth.signInDoctor')
+    t('auth.signIn')
   )}
 </button>
               </form>
