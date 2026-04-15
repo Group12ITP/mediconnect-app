@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLanguage } from '../../i18n/LanguageContext';
 import LanguageSwitcher from '../../i18n/LanguageSwitcher';
 
-const Sidebar = ({ activePage, setActivePage, onLogout }) => {
+const Sidebar = ({ activePage, setActivePage, onLogout, isOpen = false, onClose }) => {
   const { t } = useLanguage();
   const [openSections, setOpenSections] = useState({ appointments: true, records: true });
 
@@ -13,6 +13,7 @@ const Sidebar = ({ activePage, setActivePage, onLogout }) => {
   const menuItems = [
     { id: 'dashboard', label: t('nav.dashboard'), icon: '📊', onClick: () => setActivePage('dashboard') },
     { id: 'browse-doctors', label: t('nav.browseDoctors'), icon: '👨‍⚕️', onClick: () => setActivePage('browse-doctors') },
+    { id: 'profile', label: t('My Profile'), icon: '👤', onClick: () => setActivePage('profile') },
     { id: 'chatbot', label: t('nav.aiSymptomChecker'), icon: '🧬', onClick: () => setActivePage('chatbot') },
     { id: 'appointments', label: t('nav.appointments'), icon: '📅', hasSubmenu: true,
       submenu: [
@@ -39,7 +40,14 @@ const Sidebar = ({ activePage, setActivePage, onLogout }) => {
   };
 
   return (
-    <div className="w-72 bg-white border-r border-gray-200 h-screen flex flex-col shadow-sm">
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
+      <div className={`fixed md:static top-0 left-0 z-50 h-screen w-72 bg-white border-r border-gray-200 flex flex-col shadow-sm transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
       {/* Logo */}
       <div className="px-6 py-5 border-b flex items-center gap-x-3">
         <div className="w-9 h-9 bg-emerald-600 rounded-2xl flex items-center justify-center text-white text-3xl">🧬</div>
@@ -57,6 +65,7 @@ const Sidebar = ({ activePage, setActivePage, onLogout }) => {
               onClick={() => {
                 item.onClick?.();
                 if (item.hasSubmenu) toggleSection(item.id);
+                if (onClose) onClose();
               }}
               className={`w-full flex items-center gap-x-3 px-4 py-3 rounded-2xl text-left text-sm font-medium transition-all ${
                 activePage === item.id ? 'bg-emerald-600 text-white' : 'hover:bg-gray-100 text-gray-700'
@@ -72,7 +81,10 @@ const Sidebar = ({ activePage, setActivePage, onLogout }) => {
                  {item.submenu.map((sub, i) => (
                    <button
                      key={i}
-                     onClick={sub.onClick}
+                    onClick={() => {
+                      sub.onClick();
+                      if (onClose) onClose();
+                    }}
                      className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-emerald-600 rounded-xl flex items-center gap-x-2 transition-all"
                    >
                      <span className="text-emerald-500">•</span> {sub.label}
@@ -94,13 +106,14 @@ const Sidebar = ({ activePage, setActivePage, onLogout }) => {
 
         {/* Logout */}
         <div className="p-4 bg-red-50 border border-red-100 rounded-3xl">
-          <button onClick={handleLogout} className="text-sm font-bold bg-white text-red-600 border border-red-200 hover:bg-red-600 hover:text-white px-4 py-2.5 rounded-2xl w-full transition-all flex items-center justify-center gap-2 shadow-sm">
+          <button onClick={() => { handleLogout(); if (onClose) onClose(); }} className="text-sm font-bold bg-white text-red-600 border border-red-200 hover:bg-red-600 hover:text-white px-4 py-2.5 rounded-2xl w-full transition-all flex items-center justify-center gap-2 shadow-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
             {t('nav.signOut')}
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
