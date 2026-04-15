@@ -14,9 +14,11 @@ import ChatbotInterface from '../../Pages/Chatbot';
 import PatientDashboard from '../../Pages/Dashboard/PatientDashboard'; 
 import BrowseDoctors from '../../Pages/Doctors/BrowseDoctors';
 import HealthReports from '../../Pages/HealthReports/HealthReports';
+import PatientProfile from '../..//Pages/Patients/PatientProfile';
 
 const PatientMainLayout = ({ onLogout }) => {
   const [activePage, setActivePage] = useState('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [preSelectedDoctor, setPreSelectedDoctor] = useState(null);
   const location = useLocation();
 
@@ -40,14 +42,23 @@ const PatientMainLayout = ({ onLogout }) => {
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <button
+        type="button"
+        className="md:hidden fixed top-4 left-4 z-40 bg-emerald-600 text-white px-3 py-2 rounded-xl shadow-lg"
+        onClick={() => setIsSidebarOpen(true)}
+      >
+        Menu
+      </button>
       <Sidebar 
         activePage={activePage} 
         setActivePage={setActivePage} 
         onLogout={onLogout}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       <div className="flex-1 flex flex-col">    
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto p-4 sm:p-6 pt-16 md:pt-6">
           {activePage === 'dashboard' && (
             <PatientDashboard setActivePage={setActivePage} />
           )} 
@@ -62,6 +73,7 @@ const PatientMainLayout = ({ onLogout }) => {
           {activePage === 'pharmacy-finder' && <PharmacyFinder />}
           {activePage === 'health-reports' && <HealthReports />}
           {activePage === 'chatbot' && <ChatbotInterface />}
+          {activePage === 'profile' && <PatientProfile />}
         </div>
       </div>
     </div>

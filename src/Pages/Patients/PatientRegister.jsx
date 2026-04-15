@@ -1,5 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  EMAIL_REGEX,
+  PHONE_REGEX,
+  STRONG_PASSWORD_REGEX,
+  isAdultDate,
+} from '../../utils/formValidation';
 
 const PatientRegister = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
@@ -24,11 +30,13 @@ const PatientRegister = ({ onLoginSuccess }) => {
     const newErrors = {};
     if (!formData.name || formData.name.trim().length < 2) newErrors.name = 'Name is required';
     if (!formData.email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Please enter a valid email address';
+    else if (!EMAIL_REGEX.test(formData.email.trim())) newErrors.email = 'Please enter a valid email address';
     if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    else if (!STRONG_PASSWORD_REGEX.test(formData.password)) newErrors.password = 'Use 8+ chars with uppercase, lowercase, and number';
     if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
+    else if (!PHONE_REGEX.test(formData.phoneNumber.trim())) newErrors.phoneNumber = 'Please enter a valid phone number';
     if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required';
+    else if (!isAdultDate(formData.dateOfBirth)) newErrors.dateOfBirth = 'Age must be at least 12 years';
 
     setErrors(newErrors);
     setApiError('');
@@ -76,7 +84,7 @@ const PatientRegister = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
@@ -86,7 +94,7 @@ const PatientRegister = ({ onLoginSuccess }) => {
 
       <div className="w-full max-w-[1200px] bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 relative z-10 animate-fadeInUp">
         {/* LEFT SIDE - Illustration + Greeting */}
-        <div className="bg-gradient-to-br from-emerald-700 to-teal-700 p-12 flex flex-col justify-center relative overflow-hidden">
+        <div className="hidden lg:flex bg-gradient-to-br from-emerald-700 to-teal-700 p-12 flex-col justify-center relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
 
@@ -127,7 +135,7 @@ const PatientRegister = ({ onLoginSuccess }) => {
         </div>
 
         {/* RIGHT SIDE - Register Form */}
-        <div className="p-12 lg:p-16 flex flex-col justify-center bg-white">
+        <div className="p-6 sm:p-8 lg:p-16 flex flex-col justify-center bg-white">
           <div className="max-w-md mx-auto w-full">
             <div className="flex items-center gap-3 mb-10 animate-slideInRight">
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg transform rotate-3">

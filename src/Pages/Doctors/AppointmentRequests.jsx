@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Calendar, Clock, Video, User, CheckCircle, XCircle, AlertCircle, FileText, MessageCircle, Filter, Search, CalendarDays, Sparkles, MoreVertical, Eye, X } from 'lucide-react';
 import { useLanguage } from '../../i18n/LanguageContext';
+
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const doctorHeaders = () => {
@@ -18,52 +19,88 @@ const AppointmentRequests = () => {
   const [selectedDate, setSelectedDate] = useState('all');
   const [viewMode, setViewMode] = useState('grid');
   const [toast, setToast] = useState(null);
+
+  // Reject modal
+  const [rejectModal, setRejectModal] = useState(null); // { id }
+  const [rejectReason, setRejectReason] = useState('');
+  const [rejecting, setRejecting] = useState(false);
+
+  // Live polling
+  const [isLive, setIsLive] = useState(true);
+  const pollingRef = useRef(null);
+
   const { t } = useLanguage();
+
 
   const showToast = (msg, type = 'success') => { setToast({ msg, type }); setTimeout(() => setToast(null), 3500); };
 
-  const loadRequests = async (status = 'all') => {
-    setLoading(true);
+  const loadRequests = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
-      const res = await fetch(`${API}/appointments/requests?status=${status}`, { headers: doctorHeaders() });
+      const res = await fetch(`${API}/appointments/requests?status=all`, { headers: doctorHeaders() });
       const json = await res.json();
       if (json.success) setRequests(json.data);
-    } catch { showToast('Failed to load requests', 'error'); }
-    finally { setLoading(false); }
-  };
+    } catch { if (!silent) showToast('Failed to load requests', 'error'); }
+    finally { if (!silent) setLoading(false); }
+  }, []);
 
-  useEffect(() => { loadRequests(); }, []);
+  useEffect(() => { loadRequests(); }, [loadRequests]);
+
+  // Live polling every 30 seconds
+  useEffect(() => {
+    if (!isLive) { clearInterval(pollingRef.current); return; }
+    pollingRef.current = setInterval(() => loadRequests(true), 30000);
+    return () => clearInterval(pollingRef.current);
+  }, [isLive, loadRequests]);
+
 
   const handleConfirm = async (id) => {
     try {
       const res = await fetch(`${API}/appointments/${id}/confirm`, { method: 'PATCH', headers: doctorHeaders() });
       const json = await res.json();
       if (json.success) {
-        showToast(`✅ Appointment confirmed! Room: ${json.data.videoRoomId}`);
+        showToast(`✅ Confirmed! Notifications sent to patient. Room: ${json.data.videoRoomId}`);
         loadRequests();
         setShowDetails(false);
       } else showToast(json.message, 'error');
     } catch { showToast('Error confirming', 'error'); }
   };
 
-  const handleReject = async (id) => {
-    if (!window.confirm('Reject this appointment request?')) return;
-    try {
-      const res = await fetch(`${API}/appointments/${id}/reject`, { method: 'PATCH', headers: doctorHeaders(), body: JSON.stringify({ reason: 'Doctor unavailable' }) });
-      const json = await res.json();
-      if (json.success) { showToast('❌ Appointment rejected'); loadRequests(); setShowDetails(false); }
-      else showToast(json.message, 'error');
-    } catch { showToast('Error rejecting', 'error'); }
+  const openRejectModal = (id) => {
+    setRejectModal({ id });
+    setRejectReason('');
   };
+
+  const confirmReject = async () => {
+    if (!rejectModal) return;
+    setRejecting(true);
+    try {
+      const res = await fetch(`${API}/appointments/${rejectModal.id}/reject`, {
+        method: 'PATCH',
+        headers: doctorHeaders(),
+        body: JSON.stringify({ reason: rejectReason || 'Doctor unavailable' }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        showToast('❌ Appointment declined. Patient notified via email & SMS.');
+        loadRequests();
+        setShowDetails(false);
+        setRejectModal(null);
+      } else showToast(json.message, 'error');
+    } catch { showToast('Error rejecting', 'error'); }
+    finally { setRejecting(false); }
+  };
+
 
   const handleComplete = async (id) => {
     try {
       const res = await fetch(`${API}/appointments/${id}/complete`, { method: 'PATCH', headers: doctorHeaders() });
       const json = await res.json();
-      if (json.success) { showToast('✔️ Marked as completed'); loadRequests(); }
+      if (json.success) { showToast('✔️ Marked as completed. Notifications sent.'); loadRequests(); }
       else showToast(json.message, 'error');
     } catch { showToast('Error', 'error'); }
   };
+
 
   const getPriorityColor = (status) => ({
     pending: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -104,6 +141,41 @@ const AppointmentRequests = () => {
           </div>
         )}
 
+        {/* Reject Modal */}
+        {rejectModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+              <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white text-center">
+                <div className="text-4xl mb-2">🚫</div>
+                <h2 className="text-xl font-bold">Decline Appointment</h2>
+                <p className="text-red-100 text-sm mt-1">Patient will be notified via email & SMS</p>
+              </div>
+              <div className="p-6">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Reason for declining</label>
+                <textarea
+                  value={rejectReason}
+                  onChange={e => setRejectReason(e.target.value)}
+                  rows={3}
+                  placeholder="e.g. Schedule conflict, not available on this date..."
+                  className="w-full border-2 border-gray-200 focus:border-red-400 rounded-xl p-3 text-sm outline-none resize-none transition-colors"
+                />
+                <div className="flex gap-3 mt-4">
+                  <button onClick={() => setRejectModal(null)}
+                    className="flex-1 py-3 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-50 transition-all">
+                    Back
+                  </button>
+                  <button onClick={confirmReject} disabled={rejecting}
+                    className="flex-1 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-semibold disabled:opacity-60 hover:from-red-600 hover:to-red-700 transition-all flex items-center justify-center gap-2">
+                    {rejecting ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"/>Declining...</> : 'Confirm Decline'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+
         {/* Header */}
         <div className="mb-10">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
@@ -112,7 +184,17 @@ const AppointmentRequests = () => {
                 <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"/>
                 <span className="text-sm font-semibold text-slate-600">Request Management</span>
               </div>
-              <h1 className="text-4xl font-bold text-slate-800">{t('doctorPages.appointmentRequestsTitle')}</h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-4xl font-bold text-slate-800">{t('doctorPages.appointmentRequestsTitle')}</h1>
+                {/* Live toggle */}
+                <button onClick={() => setIsLive(p => !p)}
+                  title={isLive ? 'Auto-refresh ON — click to pause' : 'Auto-refresh OFF — click to enable'}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${isLive ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                  <span className={`w-2 h-2 rounded-full ${isLive ? 'bg-red-500 animate-pulse' : 'bg-gray-400'}`}/>
+                  {isLive ? 'LIVE' : 'PAUSED'}
+                </button>
+              </div>
+
               <p className="text-slate-500 mt-1">{t('doctorPages.noRequests')}</p>
             </div>
             <div className="flex items-center gap-3">
@@ -215,12 +297,13 @@ const AppointmentRequests = () => {
                           className="flex-1 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white font-semibold rounded-2xl flex items-center justify-center gap-2 hover:shadow-lg transition-all">
                           <CheckCircle className="w-5 h-5"/>{t('doctorPages.approve')}
                         </button>
-                        <button onClick={() => handleReject(req._id)}
+                        <button onClick={() => openRejectModal(req._id)}
                           className="flex-1 py-3 border-2 border-red-200 text-red-600 font-semibold rounded-2xl flex items-center justify-center gap-2 hover:bg-red-50 transition-all">
                           <XCircle className="w-5 h-5"/>{t('doctorPages.decline')}
                         </button>
                       </>
                     )}
+
                     {req.status === 'confirmed' && (
                       <>
                         <button onClick={() => window.open(`https://meet.jit.si/${req.videoRoomId}`, '_blank')}
@@ -259,8 +342,9 @@ const AppointmentRequests = () => {
                       <div className="flex gap-2">
                         {req.status === 'pending' && <>
                           <button onClick={() => handleConfirm(req._id)} className="px-3 py-1.5 bg-teal-600 text-white rounded-lg text-xs font-medium hover:bg-teal-700">Accept</button>
-                          <button onClick={() => handleReject(req._id)} className="px-3 py-1.5 border border-red-300 text-red-600 rounded-lg text-xs font-medium hover:bg-red-50">Decline</button>
+                          <button onClick={() => openRejectModal(req._id)} className="px-3 py-1.5 border border-red-300 text-red-600 rounded-lg text-xs font-medium hover:bg-red-50">Decline</button>
                         </>}
+
                         {req.status === 'confirmed' && <>
                           <button onClick={() => window.open(`https://meet.jit.si/${req.videoRoomId}`, '_blank')} className="px-3 py-1.5 bg-blue-500 text-white rounded-lg text-xs">Join</button>
                           <button onClick={() => handleComplete(req._id)} className="px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-xs">Complete</button>

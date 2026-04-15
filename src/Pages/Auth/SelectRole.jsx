@@ -11,14 +11,17 @@ const SelectRole = () => {
     const hasDoctor = !!(localStorage.getItem('doctorToken') && localStorage.getItem('doctorInfo'));
     const hasPatient = !!(localStorage.getItem('patientToken') && localStorage.getItem('patientInfo'));
     const hasPharmacist = !!(localStorage.getItem('pharmacistToken') && localStorage.getItem('pharmacistInfo'));
+    const hasAdmin = !!(localStorage.getItem('adminToken') && localStorage.getItem('adminInfo'));
     const lastRole = localStorage.getItem('lastRole');
 
-    if (hasDoctor || hasPatient || hasPharmacist) {
+    if (hasDoctor || hasPatient || hasPharmacist || hasAdmin) {
       if (lastRole === 'doctor' && hasDoctor) { navigate('/doctor/dashboard', { replace: true }); return; }
       if (lastRole === 'pharmacist' && hasPharmacist) { navigate('/pharmacist/dashboard', { replace: true }); return; }
+      if (lastRole === 'admin' && hasAdmin) { navigate('/admin/dashboard', { replace: true }); return; }
       if (hasPatient) { navigate('/patient/dashboard', { replace: true }); return; }
       if (hasDoctor) { navigate('/doctor/dashboard', { replace: true }); return; }
       if (hasPharmacist) { navigate('/pharmacist/dashboard', { replace: true }); return; }
+      if (hasAdmin) { navigate('/admin/dashboard', { replace: true }); return; }
     }
   }, [navigate]);
 
@@ -44,6 +47,13 @@ const SelectRole = () => {
       arrowColor: 'text-cyan-600',
       onClick: () => navigate('/pharmacist/login'),
     },
+    {
+      key: 'admin',
+      emoji: '🛡️',
+      colorClass: 'from-indigo-50 to-white border-indigo-100 hover:border-indigo-300',
+      arrowColor: 'text-indigo-600',
+      onClick: () => navigate('/admin/login'),
+    },
   ];
 
   return (
@@ -53,7 +63,7 @@ const SelectRole = () => {
         <LanguageSwitcher variant="default" />
       </div>
 
-      <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/40">
+      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/40">
         <div className="p-10">
           <div className="text-center mb-10">
             <div className="mx-auto w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center text-white text-4xl mb-4 shadow-lg shadow-emerald-200">
@@ -63,7 +73,7 @@ const SelectRole = () => {
             <p className="text-gray-600 mt-2">{t('selectRole.subtitle')}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
             {roles.map((role) => (
               <button
                 key={role.key}

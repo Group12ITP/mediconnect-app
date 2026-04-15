@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { EMAIL_REGEX, PHONE_REGEX, STRONG_PASSWORD_REGEX } from '../../utils/formValidation';
 
 const DoctorRegister = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
@@ -56,14 +57,15 @@ const DoctorRegister = ({ onLoginSuccess }) => {
     if (!formData.hospital) newErrors.hospital = 'Hospital/Clinic is required';
     if (!formData.email) {
       newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!EMAIL_REGEX.test(formData.email.trim())) {
       newErrors.email = 'Please enter a valid email address';
     }
     if (!formData.phone) newErrors.phone = 'Phone number is required';
+    else if (!PHONE_REGEX.test(formData.phone.trim())) newErrors.phone = 'Please enter a valid phone number';
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+    } else if (!STRONG_PASSWORD_REGEX.test(formData.password)) {
+      newErrors.password = 'Use 8+ chars with uppercase, lowercase, and number';
     }
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
@@ -152,7 +154,7 @@ const DoctorRegister = ({ onLoginSuccess }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-500 via-cyan-600 to-blue-700 flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-teal-500 via-cyan-600 to-blue-700 flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -160,7 +162,7 @@ const DoctorRegister = ({ onLoginSuccess }) => {
 
       <div className="w-full max-w-[1200px] bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 relative z-10 animate-fadeInUp">
         {/* LEFT SIDE - Same as before */}
-        <div className="bg-gradient-to-br from-teal-600 to-cyan-700 p-12 flex flex-col justify-center relative overflow-hidden">
+        <div className="hidden lg:flex bg-gradient-to-br from-teal-600 to-cyan-700 p-12 flex-col justify-center relative overflow-hidden">
           {/* ... (your original left side JSX - unchanged) */}
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
@@ -218,7 +220,7 @@ const DoctorRegister = ({ onLoginSuccess }) => {
         </div>
 
         {/* RIGHT SIDE - Registration Form */}
-        <div className="p-8 lg:p-12 flex flex-col bg-white max-h-[150vh] overflow-y-auto">
+        <div className="p-6 sm:p-8 lg:p-12 flex flex-col bg-white max-h-[150vh] overflow-y-auto">
           <div className="max-w-md mx-auto w-full">
             <div className="flex items-center gap-3 mb-8 animate-slideInRight">
               <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg transform rotate-3">🧬</div>
@@ -239,7 +241,7 @@ const DoctorRegister = ({ onLoginSuccess }) => {
 
             <form onSubmit={handleRegister} className="space-y-4">
               {/* Name and Specialty */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
                   <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Dr. Kanchana Silva" 
@@ -258,7 +260,7 @@ const DoctorRegister = ({ onLoginSuccess }) => {
               </div>
 
               {/* Experience and License */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Years of Experience</label>
                   <input type="number" name="experience" value={formData.experience} onChange={handleChange} placeholder="12"
@@ -282,7 +284,7 @@ const DoctorRegister = ({ onLoginSuccess }) => {
               </div>
 
               {/* Hospital and Location */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Hospital / Clinic</label>
                   <input type="text" name="hospital" value={formData.hospital} onChange={handleChange} placeholder="Kandy General Hospital"
@@ -298,7 +300,7 @@ const DoctorRegister = ({ onLoginSuccess }) => {
               </div>
 
               {/* Email and Phone */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
                   <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="dr.kanchana@healthai.lk"
@@ -321,7 +323,7 @@ const DoctorRegister = ({ onLoginSuccess }) => {
               </div>
 
               {/* Password Fields */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
                   <div className="relative">
